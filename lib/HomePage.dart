@@ -12,39 +12,39 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _controller = TextEditingController();
-  Future<String> _body ;
-  String _title = "";
+  var _body ;
+  var _title ;
+  var _jsonQuery;
   String url = "";
-  List data;
+  var data;
+  final String token = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkOTU5YjE5Z'
+      'GMzZWQ3ZDEzYzA5MTJiMTA5Y2U1MGQ4MiIsInN1YiI6IjYwYTczZDM3MTQyZWYxMDA0MGYwYmI4'
+      'ZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.85Ck8FPXsw5hgCgngqWSRlifUZuaNz0mWwFNpjZTHlU';
 
-  Future<String> getData() async {
+  getData() async {
+    var apiUrl = Uri.parse('https://jsonplaceholder.typicode.com/posts/1');
     var response = await http.get(
-        Uri.parse('https://jsonplaceholder.typicode.com/posts'),
+        apiUrl,
         headers: {
           "Accept": "application/json",
           'Content-Type': 'application/json'
         }
     );
-    data = json.decode(response.body);
-    print(data[1]["title"]);
 
-    _title = data[1]["title"];
     setState(() {
-      _body = getData();
+      data = json.decode(response.body);
+      _jsonQuery = json.decode(response.body).toString();
+      _body  = data["body"];
+      _title = data["title"];
     });
-    return _title;
   }
-
-_get(String urlTarget) async{
- var _parsedUrl = Uri.parse(urlTarget);
- var response = await http.get(_parsedUrl);
- return response;
-}
 
   @override
   void dispose(){
+    _jsonQuery = "Please insert URL and press the GET button";
     _controller.dispose();
     super.dispose();
   }
@@ -64,7 +64,7 @@ _get(String urlTarget) async{
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text("HTTP Request"),
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -99,19 +99,41 @@ _get(String urlTarget) async{
             ),
         ElevatedButton(
           style: style,
-          onPressed: () {
-            url = _controller.text;
-
-            print(url);
-            print(_body.toString());
-            //print(_response);
-
-          },
+          onPressed: getData,
           child: const Text('GET'),
         ),
-            Text(
-              '$_title',
+            Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    (_jsonQuery != null) ? _jsonQuery : 'No Data',
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 20,
+                  ),
+                ),
+              ),
+            Text("body: "),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  (_body != null) ? _body : 'No Body',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 20,
+                ),
+              ),
             ),
+            Text("title: "),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  (_title != null) ? _title : 'No Body',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 20,
+                ),
+              ),
+            )
         ],
     ),
       ),
