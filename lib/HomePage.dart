@@ -20,25 +20,27 @@ class _MyHomePageState extends State<MyHomePage> {
   var _jsonQuery;
   String url = "";
   var data;
-  final String token = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkOTU5YjE5Z'
-      'GMzZWQ3ZDEzYzA5MTJiMTA5Y2U1MGQ4MiIsInN1YiI6IjYwYTczZDM3MTQyZWYxMDA0MGYwYmI4'
-      'ZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.85Ck8FPXsw5hgCgngqWSRlifUZuaNz0mWwFNpjZTHlU';
+  final String token = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2N2U4MzVjNmFmMGU2MTN'
+      'kM2NlYzc4M2Y5YzZmZjZiYiIsInN1YiI6IjYwYTczZDE5MTY4OTM1MDA1ODM5MDYxMiIsInN'
+      'jb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.6XX38r34HCYIHhYIG1NhvY6VwGyrmy0EEmXeJvdiXz8';
 
   getData() async {
-    var apiUrl = Uri.parse('https://jsonplaceholder.typicode.com/posts/1');
+    var apiUrl = Uri.parse(_controller.text);
     var response = await http.get(
         apiUrl,
         headers: {
           "Accept": "application/json",
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${token}'
         }
     );
-
+    print(response.statusCode);
     setState(() {
       data = json.decode(response.body);
       _jsonQuery = json.decode(response.body).toString();
-      _body  = data["body"];
-      _title = data["title"];
+      _body  = data["original_title"];
+      _title = data["overview"];
+
     });
   }
 
@@ -112,23 +114,26 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ),
-            Text("body: "),
-            Expanded(
-              child: Padding(
+            Text("Title: ",
+                style: TextStyle(fontWeight: FontWeight.bold)
+            ),
+              Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
-                  (_body != null) ? _body : 'No Body',
+                  (_body != null) ? _body : 'No Data',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 20,
                 ),
               ),
-            ),
-            Text("title: "),
+            Text(
+                "Overview: ",
+                style: TextStyle(fontWeight: FontWeight.bold)
+                ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
-                  (_title != null) ? _title : 'No Body',
+                  (_title != null) ? _title : 'No Data',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 20,
                 ),
